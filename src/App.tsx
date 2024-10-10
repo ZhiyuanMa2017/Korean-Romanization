@@ -15,7 +15,7 @@ const App: React.FC = () => {
         if (Hangul.isHangul(cleanWord)) {
           const syllables = cleanWord.split('');
           return (
-            <span key={`${pIndex}-${index}`} className="inline-block text-center mr-1 relative">
+            <span key={`${pIndex}-${index}`} className="inline-block text-center mr-1 relative mb-1">
               {syllables.map((syllable, syllableIndex) => (
                 <span key={syllableIndex} className="inline-block text-center mr-1 relative">
                   <span className="block text-xs text-blue-800">{romanize(syllable)}</span>
@@ -25,9 +25,13 @@ const App: React.FC = () => {
             </span>
           );
         }
-        return <span key={`${pIndex}-${index}`} className="mr-1">{word}</span>;
+        return (
+            <span key={`${pIndex}-${index}`} className="inline-block text-center mr-1 relative mb-1">
+              <span className="block">{word}</span>
+            </span>
+        );
       });
-      return <p key={pIndex} className="mb-4 leading-loose">{markedWords}</p>;
+      return <p key={pIndex} className="mb-1 leading-tight">{markedWords}</p>;
     });
     setMarkedText(markedParagraphs);
   };
@@ -39,8 +43,9 @@ const App: React.FC = () => {
         margin: [10, 10, 10, 10], // Top, right, bottom, left margins
         filename: 'korean-romanization.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: {scale: 6, useCORS: true, windowWidth: 1024, media: 'print'},
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
       };
 
       html2pdf().from(input).set(opt).save();

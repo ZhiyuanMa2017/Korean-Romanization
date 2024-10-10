@@ -5,3 +5,36 @@
 body {
   font-family: 'Noto Sans KR', sans-serif;
 }
+
+#marked-text {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+#marked-text .block {
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+#marked-text .text-blue-800 {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+@media print {
+  #marked-text.print {
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  #marked-text.print .block {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  #marked-text.print .text-blue-800 {
+    font-size: 20px;
+    line-height: 1.2;
+    color: black;
+  }
+}
