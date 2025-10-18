@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Hangul from 'hangul-js';
 import html2pdf from 'html2pdf.js';
+import { decomposeSyllable, applyPhonologicalRules, romanizeSyllable } from './utils/koreanRomanizer';
 
 const App: React.FC = () => {
   const [text, setText] = useState<string>('');
@@ -13,13 +14,16 @@ const App: React.FC = () => {
       const markedWords = words.map((word, index) => {
         const cleanWord = word.trim().replace(/[.,!?]$/, '');
         if (Hangul.isHangul(cleanWord)) {
-          const syllables = cleanWord.split('');
+          // Get syllable-by-syllable romanization with phonological rules
+          const syllables = cleanWord.split('').map(decomposeSyllable).filter((syl): syl is NonNullable<typeof syl> => syl !== null);
+          const processedSyllables = applyPhonologicalRules(syllables);
+          
           return (
             <span key={`${pIndex}-${index}`} className="inline-block text-center mr-1 relative mb-1">
-              {syllables.map((syllable, syllableIndex) => (
+              {processedSyllables.map((syllable, syllableIndex) => (
                 <span key={syllableIndex} className="inline-block text-center mr-1 relative">
-                  <span className="block text-xs text-blue-800">{romanize(syllable)}</span>
-                  <span className="block">{syllable}</span>
+                  <span className="block text-xs text-blue-800">{romanizeSyllable(syllable)}</span>
+                  <span className="block">{syllable.original}</span>
                 </span>
               ))}
             </span>
@@ -84,22 +88,6 @@ const App: React.FC = () => {
   );
 };
 
-function romanize(text: string): string {
-  const romanization: { [key: string]: string } = {
-    'ㄱ': 'g', 'ㄲ': 'kk', 'ㄴ': 'n', 'ㄷ': 'd', 'ㄸ': 'tt',
-    'ㄹ': 'r', 'ㅁ': 'm', 'ㅂ': 'b', 'ㅃ': 'pp', 'ㅅ': 's',
-    'ㅆ': 'ss', 'ㅇ': '', 'ㅈ': 'j', 'ㅉ': 'jj', 'ㅊ': 'ch',
-    'ㅋ': 'k', 'ㅌ': 't', 'ㅍ': 'p', 'ㅎ': 'h',
-    'ㅏ': 'a', 'ㅐ': 'ae', 'ㅑ': 'ya', 'ㅒ': 'yae', 'ㅓ': 'eo',
-    'ㅔ': 'e', 'ㅕ': 'yeo', 'ㅖ': 'ye', 'ㅗ': 'o', 'ㅘ': 'wa',
-    'ㅙ': 'wae', 'ㅚ': 'oe', 'ㅛ': 'yo', 'ㅜ': 'u', 'ㅝ': 'wo',
-    'ㅞ': 'we', 'ㅟ': 'wi', 'ㅠ': 'yu', 'ㅡ': 'eu', 'ㅢ': 'ui',
-    'ㅣ': 'i'
-  };
-
-  return Hangul.disassemble(text)
-    .map((char: string) => romanization[char] || '')
-    .join('');
-}
+// The romanize function is now imported from koreanRomanizer.ts
 
 export default App;
